@@ -88,7 +88,7 @@ if df_selection.empty:
     st.stop()
 
 # Title with new style
-st.markdown("<h1 style='text-align: center; color: #000; font-size: 50px; font-weight: bold;'>Sales Reports Monthly</h1>", unsafe_allow_html=True)
+st.markdown("<h1 style='text-align: center; color: #000; font-size: 50px; font-weight: bold;'>Sale Monthly Interactive Chart</h1>", unsafe_allow_html=True)
 st.markdown("##")
 
 # KPI's
@@ -100,19 +100,29 @@ total_transactions = df_selection.shape[0]
 total_customers = df_selection["CustomerID"].nunique() if 'CustomerID' in df.columns else "N/A"
 
 # Customize KPI display
+# KPI's
+total_sales = int(df_selection["Total"].sum())
+average_rating = round(df_selection["Rating"].mean(), 1)
+star_rating = ":star:" * int(average_rating) + ":star-half:" if average_rating % 1 >= 0.5 else ""
+average_sale_by_transaction = round(df_selection["Total"].mean(), 2)
+total_transactions = df_selection.shape[0]
+total_customers = df_selection["CustomerID"].nunique() if 'CustomerID' in df.columns else "N/A"
+
+# Customize KPI display
 kpi_columns = st.columns(5)
 kpi_data = [
     ("Total Sales:", f"US $ {total_sales:,}"),
     ("Average Rating:", f"{average_rating} {star_rating}"),
-    ("Average Sales Per Transaction:", f"US $ {average_sale_by_transaction}"),
+    ("Average Sale Per Transaction:", f"US $ {average_sale_by_transaction}"),
     ("Total Transactions:", total_transactions),
     ("Total Customers:", total_customers),
 ]
 
 for col, (title, value) in zip(kpi_columns, kpi_data):
     with col:
-        st.subheader(title)
-        st.subheader(value)
+        st.markdown(f"<p style='font-size: 16px; font-weight: bold;'>{title}</p>", unsafe_allow_html=True)
+        st.markdown(f"<p style='font-size: 14px;'>{value}</p>", unsafe_allow_html=True)
+
 
 st.markdown("---")
 
