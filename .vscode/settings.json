@@ -1,0 +1,31 @@
+{
+  // ===
+  // EDITOR
+  // ===
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": "never",
+    "source.fixAll": "explicit"
+  },
+  // ===
+  // Files (some rules stay with .editorconfig)
+  // ===
+  "files.autoSave": "onFocusChange",
+  "files.trimFinalNewlines": true,
+  "files.exclude": {
+    "**/dist": true,
+    "**/coverage": true
+  },
+  "files.associations": {
+    ".markdownlintrc": "jsonc"
+  },
+  "search.exclude": {
+    "**/*.csv": true,
+    "**/*.js": true,
+    "**/*.css": true,
+    "out": true
+  },
+  "python.terminal.activateEnvironment": false,
+  "python.terminal.activateEnvInCurrentTerminal": false,
+  "python.languageServer": "Pylance",
+}
