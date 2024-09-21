@@ -1,5 +1,13 @@
-requests
-numpy
+streamlit
 pandas
-smtplib
+smtplib  # Note: This is part of Python's standard library and doesn't need to be installed
+PyPDF2
+openpyxl
+seaborn
+matplotlib
+python-docx
+python-pptx
+celery
+redis
 msal
+requests
