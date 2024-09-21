@@ -1,77 +1,55 @@
-import os
 import streamlit as st
-from .excel_processing import process_data_and_generate_chart
-from .email_util import send_email
-from .mail_merge import mail_merge
-from .powerpoint import create_powerpoint
+from config import CHARTS_FOLDER, REPORTS_FOLDER, EMAIL_LIST_PATH, MAIL_MERGE_TEMPLATE_PATH
+from functions.pdf import convert_pdf
+from functions.email import send_email
+from functions.excel import interactive_excel, create_project_structure_template
+from functions.powerpoint import create_powerpoint
+from functions.mail_merge import mail_merge
 
-st.title("Automate Office Tasks")
+st.title("StreamLab Options")
 
-menu = ["Process Excel Data", "Send Emails", "Mail Merge", "Generate PowerPoint"]
-choice = st.sidebar.selectbox("Select Task", menu)
+option = st.selectbox(
+    "Automate Office Task",
+    ("Convert PDF", "Send Mail", "Interactive Excel", "Download Project Structure Template", "Create PowerPoint from Charts", "Mail Merge")
+)
 
-if choice == "Process Excel Data":
-    st.header("Process Excel Data and Generate Charts")
-    uploaded_file = st.file_uploader("Upload Financial Data Excel", type=["xlsx"])
-    if uploaded_file:
-        file_path = 'data/Financial_Data.xlsx'
-        with open(file_path, 'wb') as f:
-            f.write(uploaded_file.getbuffer())
-        try:
-            chart_path, summary = process_data_and_generate_chart(file_path)
-            st.success(f"Chart generated and saved at {chart_path}")
-            st.bar_chart(summary.set_index('Category'))
-        except Exception as e:
-            st.error(f"Error processing data: {str(e)}")
+if option == "Convert PDF":
+    st.subheader("Convert PDF")
+    uploaded_file = st.file_uploader("Upload a PDF file", type="pdf")
+    if uploaded_file is not None:
+        converted_pdf = convert_pdf(uploaded_file)
+        st.download_button("Download Converted PDF", converted_pdf, file_name="converted.pdf")
 
-elif choice == "Send Emails":
-    st.header("Send Emails with Attachments")
-    recipient = st.text_input("Recipient Email")
+elif option == "Send Mail":
+    st.subheader("Send Mail")
+    sender_email = st.text_input("Sender Email")
+    receiver_email = st.text_input("Receiver Email")
     subject = st.text_input("Subject")
-    cc = st.text_input("CC Emails (separated by commas)")
-    attachment = st.file_uploader("Upload Attachment", type=["pdf", "docx", "xlsx", "pptx"])
+    message = st.text_area("Message")
+    
     if st.button("Send Email"):
-        attachment_path = ''
-        if attachment:
-            attachment_path = os.path.join('data/Attachments', attachment.name)
-            with open(attachment_path, 'wb') as f:
-                f.write(attachment.getbuffer())
-        try:
-            send_email(recipient, subject, cc, attachment_path)
-            st.success("Email sent successfully!")
-        except Exception as e:
-            st.error(f"Error sending email: {str(e)}")
+        send_email(sender_email, receiver_email, subject, message)
 
-elif choice == "Mail Merge":
-    st.header("Perform Mail Merge")
-    uploaded_template = st.file_uploader("Upload Mail Merge Template (Word)", type=["docx"])
-    uploaded_data = st.file_uploader("Upload Email List Excel", type=["xlsx"])
-    if st.button("Run Mail Merge"):
-        if uploaded_template and uploaded_data:
-            try:
-                with open('src/templates/mail_merge_template.docx', 'wb') as f:
-                    f.write(uploaded_template.getbuffer())
-                with open('data/Email_List.xlsx', 'wb') as f:
-                    f.write(uploaded_data.getbuffer())
-                mail_merge()
-                st.success("Mail merge completed successfully!")
-            except Exception as e:
-                st.error(f"Error during mail merge: {str(e)}")
-        else:
-            st.error("Please upload both template and data files.")
+elif option == "Interactive Excel":
+    st.subheader("Interactive Excel")
+    excel_file = st.file_uploader("Upload an Excel file", type="xlsx")
+    if excel_file is not None:
+        interactive_excel(excel_file)
 
-elif choice == "Generate PowerPoint":
-    st.header("Generate PowerPoint Presentation")
-    if st.button("Create PowerPoint"):
-        try:
-            ppt_path = create_powerpoint()
-            st.success(f"PowerPoint presentation created at {ppt_path}")
-            with open(ppt_path, "rb") as file:
-                btn = st.download_button(
-                    label="Download PowerPoint",
-                    data=file,
-                    file_name=os.path.basename(ppt_path),
-                    mime="application/vnd.openxmlformats-officedocument.presentationml.presentation"
-                )
-        except Exception as e:
-            st.error(f"Error creating PowerPoint: {str(e)}")
+elif option == "Download Project Structure Template":
+    st.subheader("Download Project Structure Excel Template")
+    template = create_project_structure_template()
+    st.download_button("Download Project Structure Template", template, file_name="project_structure_template.xlsx")
+
+elif option == "Create PowerPoint from Charts":
+    st.subheader("Create PowerPoint Presentation from Charts")
+    if st.button("Generate PowerPoint"):
+        ppt_path = create_powerpoint()
+        st.success(f"PowerPoint presentation created: {ppt_path}")
+        st.download_button("Download PowerPoint Presentation", open(ppt_path, 'rb'), file_name=os.path.basename(ppt_path))
+
+elif option == "Mail Merge":
+    st.subheader("Mail Merge Documents")
+    if st.button("Perform Mail Merge"):
+        mail_merge()
+        st.success("Mail merge completed. Check the output folder for documents.")

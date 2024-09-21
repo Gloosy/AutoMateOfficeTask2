@@ -1,10 +1,10 @@
 from celery import Celery
 from celery.schedules import crontab
 from .config import REDIS_URL
-from .excel_processing import process_data_and_generate_chart
-from .powerpoint import create_powerpoint
+from .functions.excel import process_data_and_generate_chart
+from .functions.powerpoint import create_powerpoint
 from .email_utils import send_email
-from .mail_merge import mail_merge
+from .functions.mail_merge import mail_merge
 import os
 
 # Initialize Celery
