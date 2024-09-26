@@ -1,6 +1,0 @@
-[theme]
-primaryColor = "#FF5733"  # Accent color
-backgroundColor = "#FFFFFF"  # Main background color
-secondaryBackgroundColor = "#E6E6E6"  # Sidebar and widget background
-textColor = "#000000"  # Text color
-font = "serif"  # Choose from "sans serif", "serif", "monospace"
