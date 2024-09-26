@@ -5,11 +5,18 @@ from openpyxl.styles import Font
 import os
 import sys
 
-application_path = os.path.dirname(sys.executable)
+# Change application_path to be your current working directory
+application_path = os.getcwd()  # This sets it to your script's working directory
 
 month = input('Introduce month: ')
 
 input_path = os.path.join(application_path, 'pivot_table.xlsx')
+
+# Add error handling for file not found
+if not os.path.exists(input_path):
+    print(f"Error: The file {input_path} was not found.")
+    sys.exit(1)
+
 wb = load_workbook(input_path)
 sheet = wb['Report']
 
@@ -43,10 +50,17 @@ for i in range(min_column+1, max_column+1):  # (B, G+1)
     sheet[f'{letter}{max_row + 1}'] = f'=SUM({letter}{min_row + 1}:{letter}{max_row})'
     sheet[f'{letter}{max_row + 1}'].style = 'Currency'
 
+# Format title and month
 sheet['A1'] = 'Sales Report'
 sheet['A2'] = month
 sheet['A1'].font = Font('Arial', bold=True, size=20)
 sheet['A2'].font = Font('Arial', bold=True, size=10)
 
+# Save output file to working directory with error handling
 output_path = os.path.join(application_path, f'report_{month}.xlsx')
-wb.save(output_path)
+
+try:
+    wb.save(output_path)
+    print(f"Report successfully saved at {output_path}")
+except Exception as e:
+    print(f"Failed to save the report: {e}")
