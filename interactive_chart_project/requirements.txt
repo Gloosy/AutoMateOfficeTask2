@@ -1,6 +1,0 @@
-pandas
-plotly
-requests
-celery
-redis
-openpyxl
